@@ -1,0 +1,3 @@
+include ':app', ':lib'
+include ':rxdialog'
+project(':rxdialog').projectDir = new File(settingsDir, '../RxDialog/lib')
