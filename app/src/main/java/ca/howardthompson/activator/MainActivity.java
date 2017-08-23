@@ -20,8 +20,8 @@ public class MainActivity extends AppCompatActivity {
 
     private CompositeDisposable disposables = null;
 
-    final String SERVER_PATH = "https://www.getitornot.com";
-    final String APP_NAME = "Get It Or Not?";
+    final String SERVER_PATH = "https://www.yourserver.com";
+    final String APP_NAME = "yourappname"; // Spaces seem to be a problem on the PHP side
     final int PRODUCER_ID = 0;
 
 
