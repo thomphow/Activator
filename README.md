@@ -1,10 +1,10 @@
 # Activator
-An RX based, updated front end to the DroidActivator project  
+An RX updated front end to the DroidActivator project.  
 
 
 [![Link to demo video - successful activation](https://img.youtube.com/vi/VID/j0vo4ROz_wk.jpg)](https://www.youtube.com/watch?v=j0vo4ROz_wk)
 
-
+[![Link to demo video - failing and trial/Later activation](https://img.youtube.com/vi/VID/KUNVKJ7MhHA.jpg)](https://www.youtube.com/watch?v=KUNVKJ7MhHA)
 
 This open source (LGPL) product is derived from the DroidActivator project developed by
 algos.it. The front end Android code has been almost completely replaced. 
