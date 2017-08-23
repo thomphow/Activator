@@ -2,9 +2,9 @@
 An RX updated front end to the DroidActivator project.  
 
 
-[![Link to demo video - successful activation](https://img.youtube.com/vi/VID/j0vo4ROz_wk.jpg)](https://www.youtube.com/watch?v=j0vo4ROz_wk)
+[![Link to demo video - successful activation](https://user-images.githubusercontent.com/5545791/29630650-e162d6d2-880a-11e7-9ee1-54e5e04c722e.jpg)](https://www.youtube.com/watch?v=j0vo4ROz_wk)
 
-[![Link to demo video - failing and trial/Later activation](https://img.youtube.com/vi/VID/KUNVKJ7MhHA.jpg)](https://www.youtube.com/watch?v=KUNVKJ7MhHA)
+[![Link to demo video - failing and trial/Later activation](https://user-images.githubusercontent.com/5545791/29630640-daf16d5e-880a-11e7-8184-91124250aef6.jpg)](https://www.youtube.com/watch?v=KUNVKJ7MhHA)
 
 This open source (LGPL) product is derived from the DroidActivator project developed by
 algos.it. The front end Android code has been almost completely replaced. 
