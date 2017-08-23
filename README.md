@@ -1,5 +1,5 @@
 # Activator
-An RX updated front end to the DroidActivator project.  
+An RX updated front end to the DroidActivator project; an Open Source Android™ licensing control system. http://www.droidactivator.org/
 
 
 [![Link to demo video - successful activation](https://user-images.githubusercontent.com/5545791/29630650-e162d6d2-880a-11e7-9ee1-54e5e04c722e.jpg)](https://www.youtube.com/watch?v=j0vo4ROz_wk)
