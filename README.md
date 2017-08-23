@@ -16,7 +16,7 @@ the application every time. Instead a date is set in the future to validate the 
 retries are made. Failing silent validation, the customer is informed of the failing validation retries and
 final deactivation. 
 - Otherwise, the functionality is the same and it makes OkHTTP calls to the same interfacing with the PHP backend.  
-- A front end RX interface is now provided. The startAppOrNot() method returns a Observable<Boolean> as to whether to your application 
+- A front end RX interface is now provided. The startAppOrNot() method returns a Observable<Boolean> as to whether your application 
 should be started. 
 
 See:
