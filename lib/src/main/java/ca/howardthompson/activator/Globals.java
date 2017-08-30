@@ -195,6 +195,11 @@ import io.reactivex.disposables.CompositeDisposable;
 
 class Globals {
 
+    public final static int ERROR_NONE = 0;
+    public final static int ERROR_USERID_NOT_FOUND = 3;
+    public final static int ERROR_WRONG_ACTIVATION_CODE = 1;
+    public final static int ERROR_WRONG_APP_NAME = 2;
+
     AlertDialog getTmpDialog() {
         return tmpDialog;
     }
@@ -1278,13 +1283,13 @@ class Globals {
 
         String failureString;
         switch (getGlobalFailureCode()) {
-            case 1:
+            case ERROR_WRONG_ACTIVATION_CODE:
                 failureString = Strings.wrong_activation_code.get();
                 break;
-            case 2:
+            case ERROR_WRONG_APP_NAME:
                 failureString = Strings.wrong_app_name.get();
                 break;
-            case 3:
+            case ERROR_USERID_NOT_FOUND:
                 failureString = Strings.userid_not_found.get();
                 break;
             default:

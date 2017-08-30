@@ -180,8 +180,10 @@ Library.
 package ca.howardthompson.activator;
 
 import android.content.Context;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
+import ca.howardthompson.rxdialog.DialogDialogEvent;
 import ca.howardthompson.rxdialog.DialogDismissEvent;
 import ca.howardthompson.rxdialog.DialogEvent;
 import ca.howardthompson.rxdialog.RxDialogBuilder;
@@ -190,6 +192,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -230,6 +233,7 @@ public class Activator extends Globals {
     final static String BUTTON_PRESSED = "BUTTON_PRESSED";
     final static String EMAIL_ENTER = "EMAIL_ENTER";
     final static String CODE_ENTER = "CODE_ENTER";
+
 
     private Context getTheContext() {
         return theContext;
@@ -512,19 +516,29 @@ public class Activator extends Globals {
         }
     }
 
+    AlertDialog actDialog = null;
+
     private DialogEvent doActivation(Context con, Boolean expired) {
+        actDialog = null;
         //Activation dialog form
         Observable<DialogEvent> obActivationForm =
                 CustomDialogs.ActivationDialog(con, this,
                 isTemporaryActivationAvailable(), expired )
+                .observeOn(AndroidSchedulers.mainThread())
               .doOnNext(
                 new Consumer<DialogEvent>() {
                     public void accept(DialogEvent event) throws Exception {
                         Log.d(Constants.TAG, "obActivationForm Event [" + event.toString() + "]");
+                        if (event instanceof DialogDialogEvent) {
+                            actDialog = ((DialogDialogEvent) event).getDialog();
+                        } else
                         if (event instanceof DialogDoneEvent) {
                             if (((DialogDoneEvent) event).isSuccess()) {
                                 setValidationTS(getTheContext());
                             }
+                            //The Activation Dialog needs to close
+                            if (actDialog != null)
+                                actDialog.dismiss();
                             stateMachine.onNext(event);
                         }
                     }
@@ -549,6 +563,7 @@ public class Activator extends Globals {
         return doActivation(con, false);
     }
 
+    AlertDialog heldDialog = null;
 
     public Observable<Boolean>  startAppOrNot(final Context con, String backendURL, String appName,
                                               int producerId, int iconResId)
@@ -579,7 +594,6 @@ public class Activator extends Globals {
                         new Consumer<DialogEvent>() {
                             public void accept(DialogEvent event) throws Exception {
                                 Log.d(Constants.TAG, "State Machine - Dialog Event [" + event.toString() + "]");
-
 
                                 if (event instanceof DialogValidationEvent) {
                                     stateMachine.onNext(doValidation(getTheContext()));
