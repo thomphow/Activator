@@ -679,5 +679,9 @@ public class Activator extends Globals {
         return getGlobalFailureCode();
     }
 
+    public String getRegUserId() { return getUserId(); }
+
+    public String getUniqueId(Context con) { return calcUniqueId( con); }
+
 }
 
