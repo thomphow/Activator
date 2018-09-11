@@ -215,19 +215,19 @@ an Observable.
                     .doOnError(new io.reactivex.functions.Consumer<Throwable>() {
                         @Override
                         public void accept(Throwable t) {
-                            Log.d(Constants.TAG,"doOnError in Main [" + t.toString() + "]");
+                            if (Constants.debug) Log.d(Constants.TAG,"doOnError in Main [" + t.toString() + "]");
                         }
                         })
 
                     .doFinally(new io.reactivex.functions.Action() {
                         public void run() throws Exception {
-                            Log.d(Constants.TAG, "doOnFinally in Main");
+                            if (Constants.debug) Log.d(Constants.TAG, "doOnFinally in Main");
 
                         }
                     })
                     .doOnComplete(new io.reactivex.functions.Action() {
                         public void run() throws Exception {
-                            Log.d(Constants.TAG, "doOnComplete in Main");
+                            if (Constants.debug) Log.d(Constants.TAG, "doOnComplete in Main");
 
                         }
                     });
@@ -277,14 +277,14 @@ an Observable.
                         String res = response.body().string();
 
                         if (!response.isSuccessful()) {
-                            em.onError(new Exception("Failing response body [" + res + "] headers [" + response.headers().toString() + "]"));
+                            em.onError(new ActivatorException("Failing response body [" + res + "] headers [" + response.headers().toString() + "]"));
                         } else {
                             Bundle bun = new Bundle();
                             Headers responseHeaders = response.headers();
-                            Log.d(Constants.TAG, "action =" +  action);
+                            if (Constants.debug) Log.d(Constants.TAG, "action =" +  action);
                             int limit = responseHeaders.size();
                             for (int i = 0; i < limit; i++) {
-                                Log.d(Constants.TAG, "Activator response[" + i + "]=" + responseHeaders.name(i) + ": " + responseHeaders.value(i));
+                                if (Constants.debug) Log.d(Constants.TAG, "Activator response[" + i + "]=" + responseHeaders.name(i) + ": " + responseHeaders.value(i));
                                 bun.putString(responseHeaders.name(i), responseHeaders.value(i));
                             }
 
@@ -307,7 +307,7 @@ an Observable.
                     .doOnError(new io.reactivex.functions.Consumer<Throwable>() {
                         @Override
                         public void accept(Throwable t) {
-                            Log.d(Constants.TAG, "Request failed [" + t.toString() + "]" );
+                            if (Constants.debug) Log.d(Constants.TAG, "Request failed [" + t.toString() + "]" );
                         }
                     });
 
@@ -321,7 +321,7 @@ an Observable.
 
     static Observable<Boolean> CheckUniqueidPresent(final Context con, final Activator theActivator)  {
         if (theActivator.getUniqueId(con).equals("")) {
-            return Observable.error(new Exception("Unique Id found to be empty string."));
+            return Observable.error(new ActivatorException("Unique Id found to be empty string."));
         }
         Bundle bun = new Bundle();
         bun.putString(Globals.KEY_UNIQUEID, theActivator.getUniqueId(con));
@@ -350,7 +350,7 @@ an Observable.
                 .doOnError(new io.reactivex.functions.Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable t) {
-                        Log.d(Constants.TAG, "Request [checkuidpresent] failed [" + t.toString() + "]" );
+                        if (Constants.debug) Log.d(Constants.TAG, "Request [checkuidpresent] failed [" + t.toString() + "]" );
                     }
                 });
     }
@@ -380,7 +380,7 @@ an Observable.
                 .doOnError(new io.reactivex.functions.Consumer<Throwable>() {
                         @Override
                         public void accept(Throwable t) {
-                            Log.d(Constants.TAG, "Request [update] failed [" + t.toString() + "]" );
+                            if (Constants.debug) Log.d(Constants.TAG, "Request [update] failed [" + t.toString() + "]" );
                         }
         });
     }
@@ -425,7 +425,7 @@ an Observable.
                 .doOnError(new io.reactivex.functions.Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable t) {
-                        Log.d(Constants.TAG, "Request [activationcode] failed [" + t.toString() + "]" );
+                        if (Constants.debug) Log.d(Constants.TAG, "Request [activationcode] failed [" + t.toString() + "]" );
                     }
                 });
     }

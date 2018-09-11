@@ -203,6 +203,10 @@ public class CustomDialogs {
 
 	/**
 	 * Observable created for a Warning Dialog with a single Confirm button
+	 * @param con MainActivity Context
+	 * @param message Text message
+	 * @param completeOnDismiss complete is to be sent on dialog dismiss.
+	 * @return Observable of Dialog Events
 	 */
 	public static Observable<DialogEvent> InfoDialog(Context con, String message,
 													 Boolean completeOnDismiss) {
@@ -220,19 +224,19 @@ public class CustomDialogs {
 		ob = ob.subscribeOn(Schedulers.io())
 				.doOnError(new Consumer<Throwable>() {
 					public void accept(Throwable t) {
-						Log.d(Constants.TAG, "Error on Warning Dialog [" + t.toString() + "]");
+						if (Constants.debug) Log.d(Constants.TAG, "Error on Warning Dialog [" + t.toString() + "]");
 					}
 				})
 				.doOnNext(
 						new io.reactivex.functions.Consumer<DialogEvent>() {
 							public void accept(DialogEvent event) throws Exception {
-								Log.d(Constants.TAG,"Warning Dialog event [" + event.toString() + "]");
+								if (Constants.debug) Log.d(Constants.TAG,"Warning Dialog event [" + event.toString() + "]");
 							}
 						})
 				.doOnComplete(
 						new io.reactivex.functions.Action() {
 							public void run() throws Exception {
-								Log.d(Constants.TAG,"Warning Dialog complete event");
+								if (Constants.debug) Log.d(Constants.TAG,"Warning Dialog complete event");
 							}
 						});
 
@@ -322,7 +326,7 @@ public class CustomDialogs {
 
 					.doOnError(new Consumer<Throwable>() {
 						public void accept(Throwable t) {
-							Log.d(Constants.TAG, "Error on email field [" + t.toString() + "]");
+							if (Constants.debug) Log.d(Constants.TAG, "Error on email field [" + t.toString() + "]");
 						}
 					})
 					.map(new Function<CharSequence, DialogEvent>() {
@@ -351,14 +355,14 @@ public class CustomDialogs {
 					})
 					.doOnError(new Consumer<Throwable>() {
 						public void accept(Throwable t) {
-							Log.d(Constants.TAG, "Error on code field [" + t.toString() + "]");
+							if (Constants.debug) Log.d(Constants.TAG, "Error on code field [" + t.toString() + "]");
 						}
 					});
 
 			ap.addText(statusText, Color.RED);
 
 		} catch (Exception e) {
-			Log.d(Constants.TAG, "Failed to create ActivatePanel [" + e.toString() + "]");
+			if (Constants.debug) Log.d(Constants.TAG, "Failed to create ActivatePanel [" + e.toString() + "]");
 			return Observable.error(e);
 		}
 
@@ -377,7 +381,7 @@ public class CustomDialogs {
 			.observeOn(AndroidSchedulers.mainThread())
 			.doOnError(new Consumer<Throwable>() {
 				public void accept(Throwable t) {
-					Log.d(Constants.TAG, "Error on Activation Dialog [" + t.toString() + "]");
+					if (Constants.debug) Log.d(Constants.TAG, "Error on Activation Dialog [" + t.toString() + "]");
 				}
 			});
 
@@ -419,7 +423,7 @@ public class CustomDialogs {
 		mergedOb =
 		mergedOb.doOnError(new Consumer<Throwable>() {
 			public void accept(Throwable t) {
-				Log.d(Constants.TAG, "Error on Merged Events from Dialog [" + t.toString() + "]");
+				if (Constants.debug) Log.d(Constants.TAG, "Error on Merged Events from Dialog [" + t.toString() + "]");
 			}
 		})
 		.subscribeOn(AndroidSchedulers.mainThread())
@@ -433,20 +437,10 @@ public class CustomDialogs {
 					AlertDialog ad = ((DialogDialogEvent) event).getDialog();
 					Button b = ad.getButton(AlertDialog.BUTTON_POSITIVE);
 
-//TODO Remove
-//							b.setOnClickListener(new View.OnClickListener() {
-//								@Override
-//								public void onClick(View v) {
-//									if (subscriber.isUnsubscribed()) return;
-//									subscriber.onNext(v);
-//								}
-//							});
-//
-//							b.setOnClickListener(new onClickListener);
 					return RxView.clicks(b)
 							.doOnSubscribe(new Consumer<Disposable>() {
 								public void accept(Disposable d) {
-									Log.d(Constants.TAG,"Positive button Subscribed");
+									if (Constants.debug) Log.d(Constants.TAG,"Positive button Subscribed");
 								}
 
 							})
@@ -505,7 +499,7 @@ public class CustomDialogs {
                                     obWarn = obWarn.doOnError(new Consumer<Throwable>() {
                                         @Override
                                         public void accept(@io.reactivex.annotations.NonNull Throwable throwable) throws Exception {
-                                            Log.d(Constants.TAG, "Warning Dialog Problem [" + throwable.toString() + "]");
+                                            if (Constants.debug) Log.d(Constants.TAG, "Warning Dialog Problem [" + throwable.toString() + "]");
                                         }
                                     });
 									obWarn = obWarn
@@ -526,7 +520,7 @@ public class CustomDialogs {
 							return BackEnd.Activate(con, theActivator)
 									.doOnSubscribe(new Consumer<Disposable>() {
 										public void accept(Disposable d) {
-											Log.d(Constants.TAG,"Activate Subscribed");
+											if (Constants.debug) Log.d(Constants.TAG,"Activate Subscribed");
 										}
 
 									})
@@ -553,7 +547,7 @@ public class CustomDialogs {
 				.doOnNext(
 						new Consumer<DialogEvent>() {
 							public void accept(DialogEvent event) throws Exception {
-								Log.d(Constants.TAG, "MergedOb doOnNext [" + event.toString() + "]");
+								if (Constants.debug) Log.d(Constants.TAG, "MergedOb doOnNext [" + event.toString() + "]");
 
 								if (event instanceof DialogEmailEvent) {
 									bun.putString(Activator.EMAIL_ENTER, ((DialogEmailEvent) event).getEmail());
@@ -564,7 +558,7 @@ public class CustomDialogs {
 								}
 
 								if (event instanceof DialogDismissEvent) {
-									Log.d(Constants.TAG, "MergeOb DialogDismissEvent");
+									if (Constants.debug) Log.d(Constants.TAG, "MergeOb DialogDismissEvent");
 								}
 
 
@@ -609,7 +603,7 @@ public class CustomDialogs {
 						})
 				.doOnComplete(new io.reactivex.functions.Action() {
 					public void run() throws Exception {
-						Log.d(Constants.TAG, "doOnComplete in ActivationDialog");
+						if (Constants.debug) Log.d(Constants.TAG, "doOnComplete in ActivationDialog");
 					}
 				});
 
@@ -617,20 +611,5 @@ public class CustomDialogs {
 		return mergedOb;
 	}
 
-//				.map(new Function<DialogEvent, DialogEvent>() {
-//					@Override
-//					public DialogEvent apply(DialogEvent event) {
-//
-//						if (event instanceof DialogDialogEvent) {
-//							Activator.getInstance().setTmpDialog(((DialogDialogEvent) event).getDialog());
-//
-//
-//
-//
-//							return (event);
-//
-//						} else
-//							return event;
-//					}
-//				})
+
 }

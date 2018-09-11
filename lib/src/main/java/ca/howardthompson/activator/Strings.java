@@ -173,8 +173,8 @@ public enum Strings {
     dialog_title("Activation required", "Attivazione"), //
 
     dialog_message("Welcome!\nA confirmation e-mail containing activation data will be sent to "
-            + "you as soon as we receive your purchase data.\n\nIn the meanwhile, you can still "
-            + "activate your app temporarily by pressing [Later].",
+            + "you as soon as we receive your purchase data. (In the meanwhile, you can still "
+            + "activate your app temporarily by pressing [Later])",
 
             "Benvenuto!\nAppena riceveremo i dati relativi al vostro acquisto vi invieremo "
                     + "una e-mail con i dati per l'attivazione.\n\nNel frattempo, potete attivare "

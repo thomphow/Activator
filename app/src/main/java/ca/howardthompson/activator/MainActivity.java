@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import ca.howardthompson.rxdialog.DialogEvent;
-
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -70,20 +69,20 @@ public class MainActivity extends AppCompatActivity {
 
 
     Observable<DialogEvent> displayMsg(final String msg, boolean completeOnDismiss, boolean doSubscribe, boolean terminateOnComplete) {
-        Log.d(Constants.TAG, "Display Dialog [" + msg + "]");
+        if (Constants.debug) Log.d(Constants.TAG, "Display Dialog [" + msg + "]");
 
         Observable<DialogEvent> tmp = theActivator.WarningDialog(MainActivity.this, msg, completeOnDismiss);
         tmp = tmp.doOnError(new io.reactivex.functions.Consumer<Throwable>() {
             @Override
             public void accept(Throwable t) {
-                Log.d(Constants.TAG,"Display Msg onError [" + msg + "]" + "[" + t.getMessage() + "]");
+                if (Constants.debug) Log.d(Constants.TAG,"Display Msg onError [" + msg + "]" + "[" + t.getMessage() + "]");
             }
         });
 
         if (terminateOnComplete)
             tmp = tmp.doOnComplete(new io.reactivex.functions.Action() {
                               public void run() throws Exception {
-                                    Log.d(Constants.TAG,"Display Msg onComplete [" + msg + "]" );
+                                    if (Constants.debug) Log.d(Constants.TAG,"Display Msg onComplete [" + msg + "]" );
                                     if (progBar != null) {
                                         progBar.setVisibility(View.GONE);
                                         progBar.getParent().bringChildToFront(progBar);
@@ -106,10 +105,10 @@ public class MainActivity extends AppCompatActivity {
                                              boolean terminateOnComplete) {
         Observable<DialogEvent> obWarn;
         if (success) {
-            Log.d(Constants.TAG, "Yes, fire it up");
+            if (Constants.debug) Log.d(Constants.TAG, "Yes, fire it up");
             obWarn = displayMsg("Looks successful", true, doSubscribe, terminateOnComplete);
         } else {
-            Log.d(Constants.TAG, "No, do not fire it up [" + theActivator.getFailureString() + "]");
+            if (Constants.debug) Log.d(Constants.TAG, "No, do not fire it up [" + theActivator.getFailureString() + "]");
             String msg;
 
             if (theActivator.getFailureCode() != 0) {
@@ -127,13 +126,13 @@ public class MainActivity extends AppCompatActivity {
 
     void displayError(String msg, Exception e, boolean doSubscribe,boolean terminateOnComplete ) {
 
-        Log.d(Constants.TAG, msg + " [" + e.toString() + " " + Log.getStackTraceString(e) + "]");
+        if (Constants.debug) Log.d(Constants.TAG, msg + " [" + e.toString() + " " + Log.getStackTraceString(e) + "]");
         setResultDisplayed(true);
         Observable<DialogEvent> tmp = displayMsg(msg + " [" + e.toString() + "]", true, doSubscribe, terminateOnComplete);
-        tmp.doOnError(new io.reactivex.functions.Consumer<Throwable>() {
+            tmp.doOnError(new io.reactivex.functions.Consumer<Throwable>() {
             @Override
             public void accept(Throwable t) {
-                Log.d(Constants.TAG, "Problem displaying error [" + t.toString() + "]");
+                if (Constants.debug) Log.d(Constants.TAG, "Problem displaying error [" + t.toString() + "]");
             }
         })
         .take(1);
@@ -145,10 +144,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        Constants.setDebug(BuildConfig.DEBUG);
+
+
         RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
             @Override
             public void accept(Throwable throwable) throws Exception {
-                Log.d(Constants.TAG, "MainActivity PlugIn Error [" + throwable.getMessage() + "]");
+                if (Constants.debug) Log.d(Constants.TAG, "MainActivity PlugIn Error [" + throwable.getMessage() + "]");
             /*
             We have doOnErrors on each Observable and can capture seemingly all these
             events. But, when an error occurs, such as passing up an OKHttp IO error, it is properly
@@ -195,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
                     .observeOn(AndroidSchedulers.mainThread())
                             .doAfterTerminate(new io.reactivex.functions.Action() {
                                 public void run() throws Exception {
-                                    Log.d(Constants.TAG,"MainActivity After Terminate");
+                                    if (Constants.debug) Log.d(Constants.TAG,"MainActivity After Terminate");
 
                                     if (getError() != null) {
                                         Exception tmpE = getError();
@@ -212,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
                             })
                     .doOnComplete(new io.reactivex.functions.Action() {
                                       public void run() throws Exception {
-                                          Log.d(Constants.TAG,"MainActivity OnComplete");
+                                          if (Constants.debug) Log.d(Constants.TAG,"MainActivity OnComplete");
                                       }
 
                                   });

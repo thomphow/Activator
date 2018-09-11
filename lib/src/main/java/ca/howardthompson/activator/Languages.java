@@ -188,7 +188,7 @@ public enum Languages {
     private String code;
 
     // current device language
-    private static Languages currLanguage = findByCode(Locale.getDefault().getLanguage());
+    private static Languages currLanguage = findByCode(Locale.getDefault().getLanguage().toLowerCase());
 
     private Languages(String code) {
         this.code = code;
@@ -202,7 +202,7 @@ public enum Languages {
 
     /**
      * Find an element by code
-     * @param the code
+     * @param code
      * @return the corresponding element
      */
     static private Languages findByCode(String code) {

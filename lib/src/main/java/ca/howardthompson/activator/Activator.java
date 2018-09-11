@@ -225,7 +225,7 @@ import static ca.howardthompson.activator.CustomDialogs.InfoDialog;
 
 
 /**
- *  Public facing methods for the Activator library
+ *  Public facing object for the Activator library
  */
 
 public class Activator extends Globals {
@@ -245,6 +245,12 @@ public class Activator extends Globals {
 
     private Context theContext = null;
 
+    /**
+     * The object used to communicate with licensing server.
+     * startAppOrNot method returns an RxJava observable used to
+     * determine the result of the operation.
+     * @param con The MailActivity Context
+     */
     public Activator(Context con) {
         setTheContext(con);
         valuesInit(con);
@@ -255,7 +261,14 @@ public class Activator extends Globals {
         return !getUniqueId(con).equals("");
     }
 
-
+    /**
+     * Display a warning Dialog; returns an Observable to monitor the
+     * users interaction with the Dialog.
+     * @param con MainActivity Context
+     * @param parm Text to be displayed
+     * @param completeOnDismiss Complete event is to be sent on dialog dismiss.
+     * @return Observable of Dialog Events
+     */
     public Observable<DialogEvent> WarningDialog(Context con, String parm, Boolean completeOnDismiss) {
 
         Observable<DialogEvent> dialogEventObservable =
@@ -333,18 +346,18 @@ public class Activator extends Globals {
                 .doOnError(new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        Log.d(Constants.TAG, "doPastValidationLimit Problem [" + throwable.toString() + "]");
+                        if (Constants.debug) Log.d(Constants.TAG, "doPastValidationLimit Problem [" + throwable.toString() + "]");
                     }
                 })
                 .doOnNext(
                         new Consumer<DialogEvent>() {
                             public void accept(DialogEvent event) throws Exception {
-                                Log.d(Constants.TAG, "doPastValidationLimit Event [" + event.toString() + "]");
+                                if (Constants.debug) Log.d(Constants.TAG, "doPastValidationLimit Event [" + event.toString() + "]");
                             }
                         })
                 .doOnComplete(new io.reactivex.functions.Action() {
                                   public void run() throws Exception {
-                                      Log.d(Constants.TAG, "doPastValidationLimit doOnComplete");
+                                      if (Constants.debug) Log.d(Constants.TAG, "doPastValidationLimit doOnComplete");
                                       stateMachine.onNext(new DialogActivationEvent());
                                   }
                               }
@@ -376,7 +389,7 @@ public class Activator extends Globals {
                 .doOnError(new Consumer<Throwable>() {
                     @Override
                     public void accept( Throwable throwable) throws Exception {
-                        Log.d(Constants.TAG, "obAttemptsRemainMsg Problem [" + throwable.toString() + "]");
+                        if (Constants.debug) Log.d(Constants.TAG, "obAttemptsRemainMsg Problem [" + throwable.toString() + "]");
                         stateMachine.onError(throwable);
                     }
                 })
@@ -389,7 +402,7 @@ public class Activator extends Globals {
                 })
                 .doOnComplete(new io.reactivex.functions.Action() {
                        public void run() throws Exception {
-                           Log.d(Constants.TAG, "doValidationAttemptsRemain doOnComplete");
+                           if (Constants.debug) Log.d(Constants.TAG, "doValidationAttemptsRemain doOnComplete");
                            stateMachine.onNext(new DialogDoneEvent(true, ""));
                        }
                    }
@@ -434,7 +447,7 @@ public class Activator extends Globals {
                 .doOnError(new io.reactivex.functions.Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable t) {
-                        Log.d(Constants.TAG, "obUpdate failed [" + t.toString() + "]");
+                        if (Constants.debug) Log.d(Constants.TAG, "obUpdate failed [" + t.toString() + "]");
                         stateMachine.onError(t);
                     }
                 });
@@ -456,7 +469,7 @@ public class Activator extends Globals {
                         .doOnError(new io.reactivex.functions.Consumer<Throwable>() {
                             @Override
                             public void accept(Throwable t) {
-                                Log.d(Constants.TAG, "obUnique failed [" + t.toString() + "]");
+                                if (Constants.debug) Log.d(Constants.TAG, "obUnique failed [" + t.toString() + "]");
                                 stateMachine.onError(t);
                             }
                         })
@@ -488,7 +501,7 @@ public class Activator extends Globals {
                 return new DialogIgnoreEvent();
             } else {
                 deActivate(getTheContext(), this);
-                Log.d(Constants.TAG,"Activated but unique Id found to be empty.");
+                if (Constants.debug) Log.d(Constants.TAG,"Activated but unique Id found to be empty.");
             }
         }
         return new DialogActivationEvent();
@@ -528,7 +541,7 @@ public class Activator extends Globals {
               .doOnNext(
                 new Consumer<DialogEvent>() {
                     public void accept(DialogEvent event) throws Exception {
-                        Log.d(Constants.TAG, "obActivationForm Event [" + event.toString() + "]");
+                        if (Constants.debug) Log.d(Constants.TAG, "obActivationForm Event [" + event.toString() + "]");
                         if (event instanceof DialogDialogEvent) {
                             actDialog = ((DialogDialogEvent) event).getDialog();
                         } else
@@ -546,7 +559,7 @@ public class Activator extends Globals {
                 .doOnError(new Consumer<Throwable>() {
                     @Override
                     public void accept( Throwable throwable) throws Exception {
-                        Log.d(Constants.TAG, "obActivationForm Problem [" + throwable.toString() + "]");
+                        if (Constants.debug) Log.d(Constants.TAG, "obActivationForm Problem [" + throwable.toString() + "]");
                         stateMachine.onError(throwable);
                     }
                 });
@@ -565,9 +578,21 @@ public class Activator extends Globals {
 
     AlertDialog heldDialog = null;
 
+    /**
+     *  Determine whether the application should start or not based on
+     *  validation time stamps and communication with the licensing server.
+     *
+     * @param con MainActivity Context
+     * @param backendURL URL of the licensing server "https://www.yourserver.com"
+     * @param appName Your app name as your have defined on the licensing server.
+     * @param producerId See licensing server documentation
+     * @param iconResId Icon to be displayed
+     * @return Obervable of boolean; whether the app should start or not.
+     * @throws ActivatorException Activator Exception
+     */
     public Observable<Boolean>  startAppOrNot(final Context con, String backendURL, String appName,
                                               int producerId, int iconResId)
-        throws Exception {
+        throws ActivatorException {
 
         //Init
         RxDialogBuilder.clearDialogStack();// Clear stack used to dismiss nested dialogs.... activate, warning, etc.
@@ -576,7 +601,7 @@ public class Activator extends Globals {
         setProducerId(producerId);
         setIconResId(iconResId);
         if (!isBackendURLValid())
-            throw new Exception("Back end URL is invalid");
+            throw new ActivatorException("Back end URL is invalid");
 
         //State machine
         stateMachine = ReplaySubject.create();
@@ -584,7 +609,7 @@ public class Activator extends Globals {
         stateMachine
                 .doOnSubscribe(new Consumer<Disposable>() {
                     public void accept(Disposable d) {
-                    Log.d(Constants.TAG,"stateMachine Subscribed");
+                    if (Constants.debug) Log.d(Constants.TAG,"stateMachine Subscribed");
 
                     }
                 });
@@ -593,7 +618,7 @@ public class Activator extends Globals {
                 .doOnNext(
                         new Consumer<DialogEvent>() {
                             public void accept(DialogEvent event) throws Exception {
-                                Log.d(Constants.TAG, "State Machine - Dialog Event [" + event.toString() + "]");
+                                if (Constants.debug) Log.d(Constants.TAG, "State Machine - Dialog Event [" + event.toString() + "]");
 
                                 if (event instanceof DialogValidationEvent) {
                                     stateMachine.onNext(doValidation(getTheContext()));
@@ -657,7 +682,11 @@ public class Activator extends Globals {
                 });
     }
 
-
+    /**
+     * Pass the RXJava Composite Disposable so Activiator can add Observables,
+     * for disposal as needed.
+     * @param disposables Applications RXJava Composite Disposable
+     */
     public void setCompDisposal(CompositeDisposable disposables) {
         setGlobalCompDisposal(disposables);
     }
@@ -666,21 +695,48 @@ public class Activator extends Globals {
         return getGlobalCompDisposal();
     }
 
+    /**
+     * Force a dispose of Observables based on the previously assigned composite
+     * disposable object
+     */
     public void doDispose() {
+        if (actDialog != null)
+            actDialog.dismiss();
         if (getGlobalCompDisposal() != null)
             getGlobalCompDisposal().dispose();
+        //We should not be having a local copy of this.
+        setTheContext(null);
     }
 
+    /**
+     * Attempts to generated a user readable error message based
+     * on the failure code, below, and additional information.
+     * @return Failure String
+     */
     public String getFailureString() {
         return getGlobalFailureString();
     }
 
+    /**
+     * Get the failure code from the backend licensing server
+     * @return Failure Code
+     */
     public int getFailureCode() {
         return getGlobalFailureCode();
     }
 
+    /**
+     * The email address as filled in on the Activation form.
+     * @return email address filed in activation form
+     */
     public String getRegUserId() { return getUserId(); }
 
+    /**
+     * Unique id is tied to the installation AND to the the device; hence if you reinstall
+     * the app on the same device or copy the app to another device you get different ids.
+     * @param con Context
+     * @return generated hardware unique id
+     */
     public String getUniqueId(Context con) { return calcUniqueId( con); }
 
 }
